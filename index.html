@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Calculator 💖</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #fce7f3; /* soft pink */
+    text-align: center;
+    padding: 20px;
+    transition: 0.3s;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: auto;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  h1 {
+    margin-bottom: 15px;
+  }
+
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    outline: none;
+    background: white;
+  }
+
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 12px;
+    background: #ec4899;
+    color: white;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+
+  #result {
+    font-size: 24px;
+    margin: 15px;
+    min-height: 30px;
+  }
+
+  .history-item {
+    background: #fbcfe8;
+    margin: 6px;
+    padding: 8px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* 🌙 DARK MODE */
+  body.dark {
+    background: #0f172a;
+    color: white;
+  }
+
+  body.dark .container {
+    background: rgba(30,30,30,0.8);
+  }
+
+  body.dark input {
+    background: #1e293b;
+    color: white;
+    border: 1px solid #444;
+  }
+
+  body.dark .history-item {
+    background: #1e293b;
+  }
+
+  /* 💖 HEART ANIMATION */
+  .heart {
+    position: fixed;
+    pointer-events: none;
+    animation: float 1s linear forwards;
+  }
+
+  @keyframes float {
+    0% {transform: translateY(0); opacity:1;}
+    100% {transform: translateY(-40px); opacity:0;}
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>💖 Love Calculator</h1>
+
+  <input id="name1" placeholder="Your Name">
+  <input id="name2" placeholder="Partner Name">
+
+  <br>
+  <button onclick="calculateLove()">Calculate 💘</button>
+  <button onclick="toggleDarkMode()">🌙</button>
+
+  <div id="result"></div>
+
+  <h3>💌 History</h3>
+  <div id="history"></div>
+
+  <button onclick="clearHistory()">🗑 Clear All</button>
+</div>
+
+<script>
+let historyList = JSON.parse(localStorage.getItem("loveHistory")) || [];
+
+function calculateLove() {
+  const name1 = document.getElementById("name1").value;
+  const name2 = document.getElementById("name2").value;
+
+  if (!name1 || !name2) {
+    alert("Enter both names 💔");
+    return;
+  }
+
+  const percent = Math.floor(Math.random() * 100) + 1;
+
+  typeEffect(percent + "% 💖");
+  saveToHistory(name1, name2, percent);
+}
+
+function typeEffect(text) {
+  let i = 0;
+  const result = document.getElementById("result");
+  result.innerHTML = "";
+
+  let interval = setInterval(() => {
+    result.innerHTML += text[i];
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 40);
+}
+
+function saveToHistory(name1, name2, percent) {
+  historyList.push({ name1, name2, percent });
+  localStorage.setItem("loveHistory", JSON.stringify(historyList));
+  renderHistory();
+}
+
+function renderHistory() {
+  const container = document.getElementById("history");
+  container.innerHTML = "";
+
+  historyList.forEach((item, index) => {
+    const div = document.createElement("div");
+    div.className = "history-item";
+
+    div.innerHTML = `
+      ❤️ ${item.name1} + ${item.name2} = ${item.percent}%
+      <button onclick="deleteItem(${index})">❌</button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function deleteItem(index) {
+  historyList.splice(index, 1);
+  localStorage.setItem("loveHistory", JSON.stringify(historyList));
+  renderHistory();
+}
+
+function clearHistory() {
+  historyList = [];
+  localStorage.removeItem("loveHistory");
+  renderHistory();
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+}
+
+/* 💖 cursor hearts */
+document.addEventListener("mousemove", function(e) {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "💖";
+
+  heart.style.left = e.pageX + "px";
+  heart.style.top = e.pageY + "px";
+
+  document.body.appendChild(heart);
+
+  setTimeout(() => heart.remove(), 800);
+});
+
+renderHistory();
+</script>
+
+</body>
+</html>
